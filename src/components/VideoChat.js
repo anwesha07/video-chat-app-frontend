@@ -16,7 +16,7 @@ function VideoChat() {
             userName,
             roomName
         }
-        
+
         //fetching token for creating new room
         axios.post('http://localhost:8000/api/video/token', data)
             .then((res) => {
@@ -32,7 +32,7 @@ function VideoChat() {
         <div>
             {
                 token ? 
-                    <Room/>
+                    <Room roomName={roomName} token={token} resetToken={() => setToken(null)}/>
                     :
                     <Lobby userName = {userName} roomName = {roomName} setNewUserName = {(userName) => setUserName(userName)} setNewRoomName = {(roomName) => setRoomName(roomName)} handleFormSubmit = {onSubmitUserDetails}/>
             }
