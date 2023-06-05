@@ -17,20 +17,14 @@ function Room(props) {
 
   useEffect(() => {
     const onParticipantConnect = (participant) => {
-      // eslint-disable-next-line max-len
       setParticipants((existingParticipants) => [
         ...existingParticipants,
-        participant,
-        participant,
-        participant,
         participant,
       ]);
     };
     const onParticipantDisconnect = (participant) => {
-      console.log(`participant Disconnected: ${participant}`);
       setParticipants(
         (existingParticipants) =>
-          // console.log(existingParticipants);
           // eslint-disable-next-line implicit-arrow-linebreak
           existingParticipants.filter((existingParticipant) => existingParticipant !== participant),
         // eslint-disable-next-line function-paren-newline
@@ -62,7 +56,6 @@ function Room(props) {
   }, [room]);
 
   useEffect(() => {
-    console.log({ useEffect: true, audioOff });
     if (audioOff) {
       room.localParticipant.audioTracks.forEach((trackPublication) => {
         trackPublication.track.disable();
@@ -88,7 +81,6 @@ function Room(props) {
 
   const toggleAudio = () => {
     setAudioOff((currentState) => !currentState);
-    console.log({ audioOff });
   };
 
   const toggleVideo = () => {
@@ -170,15 +162,12 @@ function Room(props) {
     }
   };
 
-  console.log(participants);
-
   return room ? (
     <Grid container direction="row">
       <Grid item sx={meetingStyles.participantsContainer}>
         {displayParticipants()}
       </Grid>
       <Grid item sx={meetingStyles.chatSection}>
-        {console.log(userName)}
         <Chat roomId={room.name} userName={userName} />
       </Grid>
     </Grid>

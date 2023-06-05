@@ -5,11 +5,10 @@ import Auth from './Auth';
 
 function Home(props) {
   const { isLoggedIn, setIsLoggedIn, user, setUser } = props;
-  // console.log(user);
   return isLoggedIn ? (
-    <Lobby userName={user.userName} setIsLoggedIn={(status) => setIsLoggedIn(status)} />
+    <Lobby userName={user.userName} setIsLoggedIn={setIsLoggedIn} />
   ) : (
-    <Auth setIsLoggedIn={(status) => setIsLoggedIn(status)} setUser={setUser} />
+    <Auth setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
   );
 }
 

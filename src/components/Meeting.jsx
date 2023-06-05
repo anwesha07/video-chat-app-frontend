@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Grid, Box, Typography, CircularProgress, Button, IconButton, Card, CardMedia } from '@mui/material';
+import { Box, Typography, CircularProgress, Button, IconButton, Card, CardMedia } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Video from 'twilio-video';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -54,7 +55,6 @@ function Meeting(props) {
     setMuteVideo((currentState) => !currentState);
     stream.getTracks().forEach((track) => {
       if (track.kind === 'video') {
-        // console.log(track.enabled);
         // eslint-disable-next-line no-param-reassign
         track.enabled = !track.enabled;
       }
@@ -66,7 +66,6 @@ function Meeting(props) {
     setMuteAudio((currentState) => !currentState);
     stream.getTracks().forEach((track) => {
       if (track.kind === 'audio') {
-        // console.log(track.enabled);
         // eslint-disable-next-line no-param-reassign
         track.enabled = !track.enabled;
       }
@@ -77,7 +76,7 @@ function Meeting(props) {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    if (!stream) {
+    if (token && !stream) {
       startWebCam();
       setIsVideoLoading(true);
     }
@@ -88,7 +87,7 @@ function Meeting(props) {
         track.stop();
       });
     };
-  }, [stream]);
+  }, [stream, token]);
 
   const endMeeting = () => {
     setToken(false);
@@ -105,7 +104,6 @@ function Meeting(props) {
       name: roomId,
     })
       .then((newRoom) => {
-        // console.log(room);
         setRoom(newRoom);
       })
       .catch((error) => {
@@ -126,21 +124,16 @@ function Meeting(props) {
 
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/logout`, {}, config)
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         localStorage.removeItem('TOKEN');
         setIsLoggedIn(false);
         endMeeting();
         navigate('/');
-      })
-      .catch((error) => {
-        console.log(error);
       });
   };
 
   // eslint-disable-next-line max-len
   if (room) {
-    console.log(userName);
     return (
       <Room
         room={room}
@@ -168,6 +161,9 @@ function Meeting(props) {
               </Box>
             ) : null}
             <Box sx={meetingStyles.videoContainer}>
+              {muteVideo && (
+                <Typography sx={meetingStyles.participantIcon}>{userName.slice(0, 2)}</Typography>
+              )}
               <CardMedia
                 component="video"
                 autoPlay
@@ -178,37 +174,46 @@ function Meeting(props) {
               />
             </Box>
           </Box>
-          <Box sx={meetingStyles.cardFooter}>
-            <IconButton
-              color="primary"
-              aria-label="Mute"
-              onClick={() => toggleAudio()}
-              sx={meetingStyles.meetingControlStyles}
-            >
-              {muteAudio ? <VolumeOffRoundedIcon /> : <VolumeUpRoundedIcon />}
-            </IconButton>
-            <IconButton
-              color="primary"
-              aria-label="Video off"
-              onClick={() => toggleVideo()}
-              sx={meetingStyles.meetingControlStyles}
-            >
-              {muteVideo ? <VideocamOffRoundedIcon /> : <VideocamRoundedIcon />}
-            </IconButton>
-            <IconButton
-              color="primary"
-              aria-label="Mute"
-              onClick={() => endMeeting()}
-              sx={{ ...meetingStyles.meetingControlStyles, ...meetingStyles.endMeetingButtonstyle }}
-            >
-              <CallEndRoundedIcon />
-            </IconButton>
-            <Box sx={meetingStyles.joinMeetingButtonContainerStyle}>
+          <Grid container sx={meetingStyles.cardFooter}>
+            <Grid lg={6} md={6} sm={12}>
+              <IconButton
+                color="primary"
+                aria-label="Mute"
+                onClick={toggleAudio}
+                sx={{
+                  ...meetingStyles.meetingControls,
+                  ...(muteAudio ? meetingStyles.meetingControlsOff : {}),
+                }}
+              >
+                {muteAudio ? <VolumeOffRoundedIcon /> : <VolumeUpRoundedIcon />}
+              </IconButton>
+              <IconButton
+                color="primary"
+                aria-label="Video off"
+                onClick={toggleVideo}
+                sx={{
+                  ...meetingStyles.meetingControls,
+                  ...(muteVideo ? meetingStyles.meetingControlsOff : {}),
+                }}
+              >
+                {muteVideo ? <VideocamOffRoundedIcon /> : <VideocamRoundedIcon />}
+              </IconButton>
+              <IconButton
+                color="primary"
+                aria-label="Mute"
+                onClick={endMeeting}
+                sx={{ ...meetingStyles.meetingControls, ...meetingStyles.endMeetingButton }}
+              >
+                <CallEndRoundedIcon />
+              </IconButton>
+            </Grid>
+            {/* eslint-disable-next-line max-len */}
+            <Grid lgOffset={1} lg={5} md={6} sm={12} sx={meetingStyles.joinMeetingButtonContainerStyle}>
               {room === false ? (
                 <Button
                   onClick={() => connectToRoom()}
                   // eslint-disable-next-line max-len
-                  sx={{ ...meetingStyles.meetingControlStyles, ...meetingStyles.joinMeetingButtonStyle }}
+                  sx={{ ...meetingStyles.meetingControls, ...meetingStyles.joinMeetingButtonStyle }}
                 >
                   Join Meeting
                 </Button>
@@ -219,19 +224,13 @@ function Meeting(props) {
                   loadingPosition="end"
                   variant="contained"
                   // eslint-disable-next-line max-len
-                  sx={{ ...meetingStyles.meetingControlStyles, ...meetingStyles.joinMeetingButtonStyle }}
+                  sx={{ ...meetingStyles.meetingControls, ...meetingStyles.joinMeetingButtonStyle }}
                 >
                   <span>Joining</span>
                 </LoadingButton>
               )}
-            </Box>
-          </Box>
-          {/* {room === null ? (
-            <Box sx={{ display: 'flex' }}>
-              <Typography variant="h6">Connecting to room</Typography>
-              <CircularProgress size={20} thickness={5} />
-            </Box>
-          ) : null} */}
+            </Grid>
+          </Grid>
         </Card>
       </Grid>
     </Grid>

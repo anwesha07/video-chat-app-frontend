@@ -1,19 +1,17 @@
-const chatSectionWidth = '300px';
+import { grey } from '@mui/material/colors';
+
+const chatSectionWidth = '360px';
 
 const meetingStyles = {
   participantsContainer: {
-    // outline: '2px solid black',
     height: '100vh',
     width: `calc(100% - ${chatSectionWidth})`,
   },
   participants: {
     height: '100%',
     width: '100%',
-    // outline: '12px solid red',
   },
   remoteParticipant: {
-    // outline: '2px solid blue',
-    backgroundColor: '#f5f5f5',
     padding: '10px',
     display: 'flex',
     justifyContent: 'center',
@@ -24,8 +22,6 @@ const meetingStyles = {
     marginBottom: '2px',
   },
   remoteParticipantOrderTwo: {
-    // outline: '2px solid blue',
-    backgroundColor: '#f5f5f5',
     padding: '10px',
     display: 'flex',
     justifyContent: 'center',
@@ -35,35 +31,28 @@ const meetingStyles = {
     height: '50%',
   },
   remoteParticipantOrderThree: {
-    // outline: '2px solid blue',
-    backgroundColor: '#f5f5f5',
     padding: '10px',
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    // marginLeft: '8px',
     width: ' 100%',
     height: '30%',
     overflowX: 'auto',
   },
   localParticipant: {
-    // outline: '10px solid blue',
     width: ' 100%',
     height: '90%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
     padding: '10px',
   },
   localParticipantOrderTwo: {
-    // outline: '10px solid blue',
     width: ' 100%',
     height: '50%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
     padding: '10px',
     marginBottom: '4px',
   },
@@ -73,7 +62,6 @@ const meetingStyles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
     padding: '10px',
     marginBottom: '4px',
   },
@@ -81,12 +69,10 @@ const meetingStyles = {
   noRemoteParticipants: {
     height: '100%',
     width: '100%',
-    // outline: '12px solid red',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     padding: '10px',
-    // backgroundColor: 'grey',
   },
   oneRemoteParticipant: {
     height: '100%',
@@ -98,7 +84,6 @@ const meetingStyles = {
     padding: '10px',
   },
   chatSection: {
-    // outline: '1px solid yellow',
     height: '100vh',
     padding: '8px',
     width: chatSectionWidth,
@@ -112,8 +97,9 @@ const meetingStyles = {
   },
   cardStyles: {
     height: '100%',
-    width: '500px',
-    padding: '50px',
+    width: '100%',
+    maxWidth: '500px',
+    padding: '5%',
   },
   videoContainer: {
     height: '100%',
@@ -125,6 +111,24 @@ const meetingStyles = {
     boxShadow: '0px 3px 17px -3px rgb(0 0 0 / 36%)',
     aspectRatio: '4/3',
     backgroundColor: 'black',
+  },
+  participantIcon: {
+    backgroundColor: (theme) => theme.palette.secondary.dark,
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    height: '3em',
+    width: '3em',
+    borderRadius: '50%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: '1.5rem',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '2px',
+    zIndex: 1,
   },
   videoStyles: {
     borderRadius: '15px',
@@ -140,6 +144,7 @@ const meetingStyles = {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
   },
   upperContentStyles: {
     position: 'relative',
@@ -151,40 +156,43 @@ const meetingStyles = {
     color: 'white',
   },
   loaderTextStyles: {
-    marginLeft: '5px',
+    marginLeft: '0.5em',
     color: 'white',
   },
   cardFooter: {
-    // outline: '2px solid green',
     marginTop: '30px',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  meetingControlStyles: {
-    // outline: '2px solid red',
-    backgroundColor: 'primary.main',
+  meetingControls: {
+    backgroundColor: 'primary.dark',
     color: 'white',
     margin: '5px',
     borderRadius: '8px',
     '&:hover': {
-      backgroundColor: 'primary.light',
+      backgroundColor: 'primary.main',
+    },
+  },
+  meetingControlsOff: {
+    backgroundColor: grey[500],
+    '&:hover': {
+      backgroundColor: grey[500],
     },
   },
   joinMeetingButtonContainerStyle: {
-    // outline: '2px solid red',
     flexGrow: '1',
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
   },
   joinMeetingButtonStyle: {
-    width: '200px',
+    width: '100%',
   },
-  endMeetingButtonstyle: {
-    backgroundColor: 'error.light',
+  endMeetingButton: {
+    backgroundColor: 'error.main',
     '&:hover': {
-      backgroundColor: 'error.dark',
+      backgroundColor: 'error.light',
     },
   },
 };
