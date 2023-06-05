@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Grid, Box, Card, CardActions, CardContent, Button, CircularProgress, Alert } from '@mui/material';
+import { Grid, Card, CardActions, CardContent, Button, Alert } from '@mui/material';
 
 import React, { useEffect, useState } from 'react';
 
@@ -45,15 +45,13 @@ function Lobby(props) {
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/api/room/join`, data, config)
       .then((res) => {
-        console.log(res.data);
         navigate(`/${roomId}`, { state: { token: res.data.token } });
         setIsTokenLoading(false);
         setJoinMeeting(false);
       })
       .catch((error) => {
         // something went wrong
-        console.log(error);
-        if (error.response.status === 400 || error.response.status === 404 || error.response.status === 403) {
+        if (error.response?.status === 400 || error.response?.status === 404 || error.response?.status === 403) {
           setCredentialError(true);
         } else setServerError(true);
         setIsTokenLoading(false);
@@ -65,7 +63,6 @@ function Lobby(props) {
     setCredentialError(false);
     setServerError(false);
     setIsTokenLoading(true);
-    console.log(newPasscode);
     const TOKEN = localStorage.getItem('TOKEN');
     const config = {
       headers: {
@@ -78,13 +75,10 @@ function Lobby(props) {
         const { roomId: newRoomId } = res.data;
         setRoomId(newRoomId);
         setPassCode(newPasscode);
-        console.log(res.data);
         setJoinMeeting(true);
-        // navigate(`/${roomId}`, { state: { passcode } });
       })
-      .catch((error) => {
+      .catch(() => {
         // something went wrong
-        console.log(error);
         setServerError(true);
         setIsTokenLoading(false);
       });
@@ -109,16 +103,10 @@ function Lobby(props) {
       },
     };
 
-    axios
-      .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/logout`, {}, config)
-      .then((res) => {
-        console.log(res);
-        localStorage.removeItem('TOKEN');
-        setIsLoggedIn(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/logout`, {}, config).then(() => {
+      localStorage.removeItem('TOKEN');
+      setIsLoggedIn(false);
+    });
   };
 
   return (
@@ -158,18 +146,20 @@ function Lobby(props) {
           </CardActions>
           <CardContent>
             {active === 'createMeeting' ? (
-              <CreateMeeting handleCreateMeeting={handleCreateMeeting} />
+              <CreateMeeting isTokenLoading={isTokenLoading} handleCreateMeeting={handleCreateMeeting} />
             ) : (
-              <JoinMeeting handleJoinMeeting={handleJoinMeeting} roomId={roomId} />
+              <JoinMeeting isTokenLoading={isTokenLoading} handleJoinMeeting={handleJoinMeeting} roomId={roomId} />
             )}
-            {isTokenLoading ? (
-              <Box sx={{ display: 'flex' }}>
-                <CircularProgress />
-                Connecting to room
-              </Box>
+            {serverError ? (
+              <Alert severity="error" sx={lobbyStyles.errorAlert}>
+                Something went wrong!
+              </Alert>
             ) : null}
-            {serverError ? <Alert severity="error">Something went wrong!</Alert> : null}
-            {credentialError ? <Alert severity="error">Room ID and passcode donot match!</Alert> : null}
+            {credentialError ? (
+              <Alert severity="error" sx={lobbyStyles.errorAlert}>
+                Room ID and passcode don&rsquo;t match!
+              </Alert>
+            ) : null}
           </CardContent>
         </Card>
       </Grid>

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import lobbyStyles from './styles/lobbyStyles';
 
 function JoinMeeting(props) {
-  const { handleJoinMeeting, roomId: newRoomId } = props;
+  const { handleJoinMeeting, roomId: newRoomId, isTokenLoading } = props;
 
   const [roomId, setRoomId] = useState(newRoomId);
   const [passcode, setPasscode] = useState('');
@@ -36,28 +36,30 @@ function JoinMeeting(props) {
         id="outlined-basic"
         label="Room ID"
         variant="outlined"
+        fullWidth
+        autoComplete="off"
         onChange={handleEnterRoomId}
         value={roomId}
         sx={lobbyStyles.fieldEntryStyles}
         error={isRoomIdIncorrectError}
-        helperText={isRoomIdIncorrectError ? 'please enter a valid ten digit roomId!' : ''}
+        helperText={isRoomIdIncorrectError ? 'Please enter a valid ten digit roomId!' : ''}
       />
       <Typography>Enter passcode:</Typography>
       <TextField
         id="outlined-basic"
         label="Passcode"
         variant="outlined"
+        fullWidth
+        autoComplete="off"
         onChange={handleEnterPasscode}
         value={passcode}
         sx={lobbyStyles.fieldEntryStyles}
         error={isPasscodeIncorrectError}
-        helperText={isPasscodeIncorrectError ? 'please enter a valid six digit passcode!' : ''}
+        helperText={isPasscodeIncorrectError ? 'Please enter a valid six digit passcode!' : ''}
       />
-      <Box>
-        <Button variant="contained" type="submit">
-          Join Room
-        </Button>
-      </Box>
+      <Button variant="contained" type="submit" disabled={isTokenLoading} sx={lobbyStyles.button}>
+        {!isTokenLoading ? 'Join Room' : 'Connecting...'}
+      </Button>
     </Box>
   );
 }
@@ -65,6 +67,7 @@ function JoinMeeting(props) {
 JoinMeeting.propTypes = {
   handleJoinMeeting: PropTypes.func.isRequired,
   roomId: PropTypes.string.isRequired,
+  isTokenLoading: PropTypes.bool.isRequired,
 };
 
 export default JoinMeeting;

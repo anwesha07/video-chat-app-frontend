@@ -8,7 +8,7 @@ function CreateMeeting(props) {
   const [passCode, setPassCode] = useState('');
   const [isPasscodeIncorrectError, setIsPasscodeIncorrectError] = useState(false);
 
-  const { handleCreateMeeting } = props;
+  const { handleCreateMeeting, isTokenLoading } = props;
 
   const handleEnterPasscode = (event) => {
     if (isPasscodeIncorrectError) setIsPasscodeIncorrectError(false);
@@ -31,6 +31,8 @@ function CreateMeeting(props) {
         id="outlined-basic"
         label="Passcode"
         variant="outlined"
+        fullWidth
+        autoComplete="off"
         onChange={handleEnterPasscode}
         value={passCode}
         sx={lobbyStyles.fieldEntryStyles}
@@ -38,8 +40,8 @@ function CreateMeeting(props) {
         helperText={isPasscodeIncorrectError ? 'please enter a valid six digit passcode!' : ''}
       />
       <Box>
-        <Button variant="contained" type="submit">
-          Create Meeting
+        <Button variant="contained" type="submit" disabled={isTokenLoading} sx={lobbyStyles.button}>
+          {!isTokenLoading ? 'Create Meeting' : 'Connecting...'}
         </Button>
       </Box>
     </Box>
@@ -48,6 +50,7 @@ function CreateMeeting(props) {
 
 CreateMeeting.propTypes = {
   handleCreateMeeting: PropTypes.func.isRequired,
+  isTokenLoading: PropTypes.bool.isRequired,
 };
 
 export default CreateMeeting;
