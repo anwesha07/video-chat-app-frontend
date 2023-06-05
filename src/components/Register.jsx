@@ -93,6 +93,8 @@ function Register(props) {
             type="text"
             label="Username"
             variant="outlined"
+            fullWidth
+            autoFocus
             sx={styleClasses.inputBox}
             onChange={handleUserNameInput}
             value={userName}
@@ -104,6 +106,8 @@ function Register(props) {
             type={showPassword ? 'text' : 'password'}
             label="Password"
             variant="outlined"
+            fullWidth
+            autoFocus
             sx={styleClasses.inputBox}
             onChange={handlePasswordInput}
             value={password}
@@ -124,6 +128,8 @@ function Register(props) {
             type={showConfirmPassword ? 'text' : 'password'}
             label="Confirm Password"
             variant="outlined"
+            fullWidth
+            autoFocus
             sx={styleClasses.inputBox}
             onChange={handleConfirmPasswordInput}
             value={confirmPassword}

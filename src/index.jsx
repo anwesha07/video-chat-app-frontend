@@ -10,15 +10,17 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const theme = createTheme({
   palette: {
-    mode: 'light',
+    mode: 'dark',
     background: {
-      default: '#fff',
-      paper: grey[100],
+      default: '#495a6b',
+      paper: grey[900],
     },
-    secondary: {
-      main: '#02274b0a',
-      light: '#aba9a929',
+    error: {
+      main: '#f44336',
     },
+  },
+  typography: {
+    fontFamily: '"Montserrat", sans-serif',
   },
 });
 root.render(

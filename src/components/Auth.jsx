@@ -1,13 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useState } from 'react';
-import { Box, Grid } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
-import meetCover from '../meetCover.png';
-import styleClasses from './styles/authStyles';
+import styles from './styles/authStyles';
 import Login from './Login';
 import Register from './Register';
+import EchoLogo from '../video-chat.png';
 
 function Auth(props) {
   const { setIsLoggedIn, setUser } = props;
@@ -17,17 +18,14 @@ function Auth(props) {
   const [registerError, setRegisterError] = useState('');
 
   const registerUser = (userData) => {
-    // console.log(userData);
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/register`, userData)
       .then((res) => {
-        // console.log(res);
         localStorage.setItem('TOKEN', res.data.token);
         setIsLoggedIn(true);
         setUser({ userId: res.data._id, userName: res.data.userName });
       })
       .catch((error) => {
-        console.log(error.response.data.message);
         if (!error.response) {
           setRegisterError('Something went wrong!');
         } else if (error.response.status === 409) {
@@ -39,17 +37,14 @@ function Auth(props) {
   };
 
   const loginUser = (userData) => {
-    console.log(userData);
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, userData)
       .then((res) => {
-        console.log(res);
         localStorage.setItem('TOKEN', res.data.token);
         setIsLoggedIn(true);
         setUser({ userId: res.data._id, userName: res.data.userName });
       })
       .catch((error) => {
-        // console.log(error.response.data.message);
         if (!error.response || error.response.status === 500) {
           setLoginError('Something went wrong!');
         } else {
@@ -59,12 +54,16 @@ function Auth(props) {
   };
 
   return (
-    <Grid container sx={styleClasses.container}>
-      <Grid item xs={8} sx={styleClasses.itemLeft}>
-        <Box component="img" src={meetCover} alt="no image here" sx={styleClasses.image} />
-      </Grid>
-      <Grid item xs={4}>
-        <Box sx={styleClasses.itemRight}>
+    <Grid container sx={styles.container}>
+      <Grid lg={4} sm={6} xs={12} lgOffset={4} smOffset={3} sx={styles.innerContainer}>
+        <Typography variant="h2" component="h1" sx={styles.title}>
+          <Box component="img" src={EchoLogo} alt="Echo" sx={styles.logo} />
+          Echo
+        </Typography>
+        <Typography variant="subtitle1" component="h3" sx={styles.subtitle}>
+          Connect with your loved ones in a jiffy!
+        </Typography>
+        <Box sx={styles.authForm}>
           {registeredUser ? (
             <Login
               loginError={loginError}

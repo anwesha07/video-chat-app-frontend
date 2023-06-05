@@ -60,6 +60,8 @@ function Login(props) {
             type="text"
             label="Username"
             variant="outlined"
+            fullWidth
+            autoFocus
             sx={styleClasses.inputBox}
             onChange={handleUserNameInput}
             value={userName}
@@ -71,6 +73,8 @@ function Login(props) {
             type={showPassword ? 'text' : 'password'}
             label="Password"
             variant="outlined"
+            fullWidth
+            autoFocus
             sx={styleClasses.inputBox}
             onChange={handlePasswordInput}
             value={password}
