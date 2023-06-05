@@ -6,6 +6,7 @@ import CallEndRoundedIcon from '@mui/icons-material/CallEndRounded';
 import VideocamOffRoundedIcon from '@mui/icons-material/VideocamOffRounded';
 import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import participantStyles from './styles/participantStyles';
 import meetingStyles from './styles/meetingStyles';
 
@@ -15,10 +16,20 @@ function Participant(props) {
   // audio and video tracks of all participants
   const [audioTracks, setAudioTracks] = useState([]);
   const [videoTracks, setVideoTracks] = useState([]);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(!audioOff);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(!videoOff);
 
   // refs to access the audio and video elements
   const audioRef = useRef();
   const videoRef = useRef();
+
+  useEffect(() => {
+    setIsAudioEnabled(!audioOff);
+  }, [audioOff]);
+
+  useEffect(() => {
+    setIsVideoEnabled(!videoOff);
+  }, [videoOff]);
 
   // the participant object contains a trackMap of track publications, we have to extract
   // tracks from them to attach to the video and audio elements
@@ -29,18 +40,45 @@ function Participant(props) {
       .map((trackPub) => trackPub.track)
       // removing the null tracks
       .filter((track) => track !== null);
+
+  const handleTrackUpdate = (track) => {
+    if (track.kind === 'video') setIsVideoEnabled(track.isEnabled);
+    if (track.kind === 'audio') setIsAudioEnabled(track.isEnabled);
+
+    track.on('enabled', () => {
+      if (track.kind === 'video') setIsVideoEnabled(true);
+      if (track.kind === 'audio') setIsAudioEnabled(true);
+    });
+    track.on('disabled', () => {
+      if (track.kind === 'video') setIsVideoEnabled(false);
+      if (track.kind === 'audio') setIsAudioEnabled(false);
+    });
+  };
+
   useEffect(() => {
     const trackSubscribed = (track) => {
-      console.log({ track });
       if (track.kind === 'video') {
         setVideoTracks((videotracks) => [...videotracks, track]);
       } else {
         setAudioTracks((audiotracks) => [...audiotracks, track]);
       }
+      track.on('enabled', () => {
+        if (track.kind === 'video') {
+          setIsVideoEnabled(true);
+        } else {
+          setIsAudioEnabled(true);
+        }
+      });
+      track.on('disabled', () => {
+        if (track.kind === 'video') {
+          setIsVideoEnabled(false);
+        } else {
+          setIsAudioEnabled(false);
+        }
+      });
     };
 
     const trackUnsubscribed = (track) => {
-      console.log({ track });
       if (track.kind === 'video') {
         // eslint-disable-next-line max-len
         setVideoTracks((existingVideoTracks) => existingVideoTracks.filter((videotrack) => videotrack !== track));
@@ -54,6 +92,13 @@ function Participant(props) {
     // of the participant object to the state
     setAudioTracks(convertTrackPublicationToTrack(participant.audioTracks));
     setVideoTracks(convertTrackPublicationToTrack(participant.videoTracks));
+
+    participant.tracks.forEach((publication) => {
+      if (publication.isSubscribed) {
+        handleTrackUpdate(publication.track);
+      }
+      publication.on('subscribed', handleTrackUpdate);
+    });
 
     participant.on('trackSubscribed', trackSubscribed);
     participant.on('trackUnsubscribed', trackUnsubscribed);
@@ -71,7 +116,6 @@ function Participant(props) {
     // get the first video track from the videoTracks in state and,
     //  if it exists, attach it to the <video/> DOM node captured with a ref
     const videoTrack = videoTracks[0];
-    console.log(videoTrack);
     if (videoTrack) videoTrack.attach(videoRef.current);
 
     // cleanup function to detach the video tracks
@@ -101,34 +145,71 @@ function Participant(props) {
           : { ...participantStyles.participant, ...participantStyles.remoteParticipant }
       }
     >
-      <Typography variant="body1" sx={participantStyles.participantName}>
-        {participant.identity}
-      </Typography>
+      {!isVideoEnabled && (
+        <Typography sx={meetingStyles.participantIcon}>
+          {participant.identity.slice(0, 2)}
+        </Typography>
+      )}
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <CardMedia component="video" ref={videoRef} autoPlay sx={participantStyles.participantVideo} />
+      <Box sx={participantStyles.participantVideoContainer}>
+        <Typography variant="body1" sx={participantStyles.participantName}>
+          {isLocal ? 'You' : (
+            <>
+              {!isAudioEnabled
+                && <VolumeOffIcon sx={participantStyles.remoteParticipantMutedIcon} />}
+              {participant.identity}
+            </>
+          )}
+        </Typography>
+        <CardMedia component="video" ref={videoRef} autoPlay sx={participantStyles.participantVideo} />
+      </Box>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={audioRef} autoPlay />
       {isLocal ? (
-        <Box sx={participantStyles.meetingControls}>
-          <IconButton color="primary" aria-label="Mute" onClick={toggleAudio} sx={meetingStyles.meetingControlStyles}>
-            {audioOff ? <VolumeOffRoundedIcon /> : <VolumeUpRoundedIcon />}
+        <Box sx={participantStyles.meetingControlContainer}>
+          <IconButton
+            color="primary"
+            aria-label="Mute"
+            onClick={toggleAudio}
+            sx={{
+              ...meetingStyles.meetingControls,
+              ...participantStyles.meetingControls,
+              ...(!isAudioEnabled ? meetingStyles.meetingControlsOff : {}),
+            }}
+          >
+            {!isAudioEnabled ? (
+              <VolumeOffRoundedIcon sx={participantStyles.meetingControlIcons} />
+            ) : (
+              <VolumeUpRoundedIcon sx={participantStyles.meetingControlIcons} />
+            )}
           </IconButton>
           <IconButton
             color="primary"
             aria-label="Video off"
             onClick={toggleVideo}
-            sx={meetingStyles.meetingControlStyles}
+            sx={{
+              ...meetingStyles.meetingControls,
+              ...participantStyles.meetingControls,
+              ...(!isVideoEnabled ? meetingStyles.meetingControlsOff : {}),
+            }}
           >
-            {videoOff ? <VideocamOffRoundedIcon /> : <VideocamRoundedIcon />}
+            {!isVideoEnabled ? (
+              <VideocamOffRoundedIcon sx={participantStyles.meetingControlIcons} />
+            ) : (
+              <VideocamRoundedIcon sx={participantStyles.meetingControlIcons} />
+            )}
           </IconButton>
           <IconButton
             color="primary"
             aria-label="Mute"
             onClick={endMeeting}
-            // eslint-disable-next-line max-len
-            sx={{ ...meetingStyles.meetingControlStyles, ...meetingStyles.endMeetingButtonstyle }}
+            sx={{
+              ...meetingStyles.meetingControls,
+              ...participantStyles.meetingControls,
+              ...meetingStyles.endMeetingButton,
+            }}
           >
-            <CallEndRoundedIcon />
+            <CallEndRoundedIcon sx={participantStyles.meetingControlIcons} />
           </IconButton>
           {/* <Button aria-label="end" onClick={endMeeting}>
             End
@@ -148,8 +229,13 @@ Participant.propTypes = {
   toggleVideo: PropTypes.func.isRequired,
   endMeeting: PropTypes.func.isRequired,
   isLocal: PropTypes.bool.isRequired,
-  audioOff: PropTypes.bool.isRequired,
-  videoOff: PropTypes.bool.isRequired,
+  audioOff: PropTypes.bool,
+  videoOff: PropTypes.bool,
+};
+
+Participant.defaultProps = {
+  audioOff: false,
+  videoOff: false,
 };
 
 export default Participant;
