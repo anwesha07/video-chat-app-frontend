@@ -125,7 +125,7 @@ function Meeting(props) {
     };
 
     axios
-      .post('http://localhost:8000/api/auth/logout', {}, config)
+      .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/logout`, {}, config)
       .then((res) => {
         console.log(res);
         localStorage.removeItem('TOKEN');

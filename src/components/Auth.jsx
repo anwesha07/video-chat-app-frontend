@@ -19,7 +19,7 @@ function Auth(props) {
   const registerUser = (userData) => {
     // console.log(userData);
     axios
-      .post('http://localhost:8000/api/auth/register', userData)
+      .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/register`, userData)
       .then((res) => {
         // console.log(res);
         localStorage.setItem('TOKEN', res.data.token);
@@ -41,7 +41,7 @@ function Auth(props) {
   const loginUser = (userData) => {
     console.log(userData);
     axios
-      .post('http://localhost:8000/api/auth/login', userData)
+      .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, userData)
       .then((res) => {
         console.log(res);
         localStorage.setItem('TOKEN', res.data.token);

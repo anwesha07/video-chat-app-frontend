@@ -43,7 +43,7 @@ function Lobby(props) {
 
     // fetching token for creating new room
     axios
-      .post('http://localhost:8000/api/room/join', data, config)
+      .post(`${process.env.REACT_APP_SERVER_URL}/api/room/join`, data, config)
       .then((res) => {
         console.log(res.data);
         navigate(`/${roomId}`, { state: { token: res.data.token } });
@@ -73,7 +73,7 @@ function Lobby(props) {
       },
     };
     axios
-      .post('http://localhost:8000/api/room/', { passcode: newPasscode }, config)
+      .post(`${process.env.REACT_APP_SERVER_URL}/api/room/`, { passcode: newPasscode }, config)
       .then((res) => {
         const { roomId: newRoomId } = res.data;
         setRoomId(newRoomId);
@@ -110,7 +110,7 @@ function Lobby(props) {
     };
 
     axios
-      .post('http://localhost:8000/api/auth/logout', {}, config)
+      .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/logout`, {}, config)
       .then((res) => {
         console.log(res);
         localStorage.removeItem('TOKEN');

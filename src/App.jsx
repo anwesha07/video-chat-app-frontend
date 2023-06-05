@@ -24,7 +24,7 @@ function App() {
       },
     };
     axios
-      .post('http://localhost:8000/api/auth/verify', {}, config)
+      .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/verify`, {}, config)
       .then((res) => {
         // console.log(res);
         setIsLoggedIn(res.data.isLoggedIn);

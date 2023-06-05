@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import PropTypes from 'prop-types';
 import chattingStyles from './styles/chattingStyles';
 
-const URL = 'http://localhost:8000';
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function Chat(props) {
   const { roomId, userName } = props;
