@@ -71,10 +71,18 @@ function Meeting(props) {
       }
     });
   };
+
+  // if user is not logged in redirect to home page
   useEffect(() => {
     if (!isLoggedIn) navigate('/');
   }, [isLoggedIn]);
 
+  // no token implies directly link is entered so redirect to join meeting page
+  useEffect(() => {
+    if (!token) navigate('/', { state: { roomId } });
+  }, [token]);
+
+  // if token then start camera
   useEffect(() => {
     if (token && !stream) {
       startWebCam();
@@ -93,10 +101,6 @@ function Meeting(props) {
     setToken(false);
     navigate('/');
   };
-
-  useEffect(() => {
-    if (!token) navigate('/', { state: { roomId } });
-  }, [token]);
 
   const connectToRoom = () => {
     setRoom(null);
@@ -122,17 +126,15 @@ function Meeting(props) {
       },
     };
 
-    axios
-      .post(`${process.env.REACT_APP_SERVER_URL}/api/auth/logout`, {}, config)
-      .then(() => {
-        localStorage.removeItem('TOKEN');
-        setIsLoggedIn(false);
-        endMeeting();
-        navigate('/');
-      });
+    axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/logout`, {}, config).then(() => {
+      localStorage.removeItem('TOKEN');
+      setIsLoggedIn(false);
+      endMeeting();
+      navigate('/');
+    });
   };
 
-  // eslint-disable-next-line max-len
+  // once room is set go to room page
   if (room) {
     return (
       <Room
@@ -161,9 +163,8 @@ function Meeting(props) {
               </Box>
             ) : null}
             <Box sx={meetingStyles.videoContainer}>
-              {muteVideo && (
-                <Typography sx={meetingStyles.participantIcon}>{userName.slice(0, 2)}</Typography>
-              )}
+              {/* eslint-disable-next-line max-len */}
+              {muteVideo && <Typography sx={meetingStyles.participantIcon}>{userName.slice(0, 2)}</Typography>}
               <CardMedia
                 component="video"
                 autoPlay
@@ -200,7 +201,7 @@ function Meeting(props) {
               </IconButton>
               <IconButton
                 color="primary"
-                aria-label="Mute"
+                aria-label="End Meeting"
                 onClick={endMeeting}
                 sx={{ ...meetingStyles.meetingControls, ...meetingStyles.endMeetingButton }}
               >

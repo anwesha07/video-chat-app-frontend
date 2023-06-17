@@ -5,8 +5,6 @@ import { io } from 'socket.io-client';
 import PropTypes from 'prop-types';
 import chattingStyles from './styles/chattingStyles';
 
-const URL = process.env.REACT_APP_SERVER_URL;
-
 function Chat(props) {
   const { roomId, userName } = props;
 
@@ -15,14 +13,18 @@ function Chat(props) {
   const [chatMessages, setChatMessages] = useState([]);
 
   useEffect(() => {
-    socket.current = io(URL);
+    // set up web socket conn with server
+    socket.current = io(process.env.REACT_APP_SERVER_URL);
     socket.current.on('connect', () => {
       socket.current.emit('clientConnected', roomId);
     });
     socket.current.on('messageReceived', (messageObject) => {
       setChatMessages((currentChatMessages) => [
         ...currentChatMessages,
-        { ...messageObject, timestamp: new Date() },
+        {
+          ...messageObject,
+          timestamp: new Date(),
+        },
       ]);
     });
   }, []);
@@ -37,7 +39,10 @@ function Chat(props) {
       socket.current.emit('message', messageObject);
       setChatMessages((currentChatMessages) => [
         ...currentChatMessages,
-        { ...messageObject, timestamp: new Date() },
+        {
+          ...messageObject,
+          timestamp: new Date(),
+        },
       ]);
     }
     setMessage('');
@@ -64,8 +69,12 @@ function Chat(props) {
 
   return (
     <Card sx={chattingStyles.chatContainer}>
-      <Typography variant="h2" sx={chattingStyles.chatTitle}>Chat Messages</Typography>
-      <Typography variant="caption" component="p" sx={chattingStyles.chatInfo}>The messages sent in the chat are not stored and will disappear once you disconnect</Typography>
+      <Typography variant="h2" sx={chattingStyles.chatTitle}>
+        Chat Messages
+      </Typography>
+      <Typography variant="caption" component="p" sx={chattingStyles.chatInfo}>
+        The messages sent in the chat are not stored and will disappear once you disconnect
+      </Typography>
       <Box sx={chattingStyles.chatDisplaysection}>{displayChat()}</Box>
       <Box component="form" sx={chattingStyles.messagingSection} onSubmit={(event) => sendMessage(event)}>
         <InputBase
@@ -76,7 +85,13 @@ function Chat(props) {
             setMessage(event.target.value);
           }}
         />
-        <IconButton type="submit" color="primary" aria-label="Send" disabled={message.length === 0} sx={chattingStyles.messageSendButton}>
+        <IconButton
+          type="submit"
+          color="primary"
+          aria-label="Send"
+          disabled={message.length === 0}
+          sx={chattingStyles.messageSendButton}
+        >
           <SendRoundedIcon />
         </IconButton>
       </Box>

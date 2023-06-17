@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Box, IconButton, CardMedia, Typography } from '@mui/material';
@@ -56,12 +57,18 @@ function Participant(props) {
   };
 
   useEffect(() => {
+    // when new tracks are published by any participant
     const trackSubscribed = (track) => {
+      // add the new track to the state
       if (track.kind === 'video') {
         setVideoTracks((videotracks) => [...videotracks, track]);
       } else {
         setAudioTracks((audiotracks) => [...audiotracks, track]);
       }
+
+      // check when the new track is enabled or disabled
+      // if the video track is disabled, show the participant name icon
+      // if the audio track is disabled, show the muted icon next to participant name
       track.on('enabled', () => {
         if (track.kind === 'video') {
           setIsVideoEnabled(true);
@@ -93,6 +100,8 @@ function Participant(props) {
     setAudioTracks(convertTrackPublicationToTrack(participant.audioTracks));
     setVideoTracks(convertTrackPublicationToTrack(participant.videoTracks));
 
+    // To handle audio/video enabled/disabled state for participants
+    // who are already present in the room
     participant.tracks.forEach((publication) => {
       if (publication.isSubscribed) {
         handleTrackUpdate(publication.track);
@@ -100,6 +109,7 @@ function Participant(props) {
       publication.on('subscribed', handleTrackUpdate);
     });
 
+    // Attach track subscription event handler for new participants
     participant.on('trackSubscribed', trackSubscribed);
     participant.on('trackUnsubscribed', trackUnsubscribed);
 
@@ -146,17 +156,16 @@ function Participant(props) {
       }
     >
       {!isVideoEnabled && (
-        <Typography sx={meetingStyles.participantIcon}>
-          {participant.identity.slice(0, 2)}
-        </Typography>
+        <Typography sx={meetingStyles.participantIcon}>{participant.identity.slice(0, 2)}</Typography>
       )}
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <Box sx={participantStyles.participantVideoContainer}>
         <Typography variant="body1" sx={participantStyles.participantName}>
-          {isLocal ? 'You' : (
+          {isLocal ? (
+            'You'
+          ) : (
             <>
-              {!isAudioEnabled
-                && <VolumeOffIcon sx={participantStyles.remoteParticipantMutedIcon} />}
+              {!isAudioEnabled && <VolumeOffIcon sx={participantStyles.remoteParticipantMutedIcon} />}
               {participant.identity}
             </>
           )}
